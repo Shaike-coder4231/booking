@@ -7,17 +7,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 /* ============================================================
- * MIDDLEWARE (глобальные)
+ * MIDDLEWARE
  * ============================================================ */
-
-// 1. CORS — чтобы frontend мог обращаться к API
 app.use(cors());
-
-// 2. Парсинг JSON и urlencoded
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 3. Логирование всех входящих запросов (задача Алексеева)
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -28,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 /* ============================================================
- * РАЗДАЧА СТАТИКИ (задача Алексеева)
+ * СТАТИКА
  * ============================================================ */
 const CLIENT_DIR = path.join(__dirname, '..', 'client');
 app.use(express.static(CLIENT_DIR));
@@ -41,30 +36,24 @@ app.use(express.static(CLIENT_DIR));
 const coursesRouter = require('./routes/courses');
 app.use('/api/courses', coursesRouter);
 
-// --- Записи (Выдрина В.И.) ---
-// Раскомментировать, когда будет готов routes/bookings.js:
+// --- Записи (Выдрина В.И.) --- раскомментировать, когда будет готово:
 // const bookingsRouter = require('./routes/bookings');
 // app.use('/api/bookings', bookingsRouter);
 
-// --- Отзывы (Грищенко Р.А.) ---
-// Раскомментировать, когда будет готов routes/reviews.js:
+// --- Отзывы (Грищенко Р.А.) --- раскомментировать, когда будет готово:
 // const reviewsRouter = require('./routes/reviews');
 // app.use('/api/reviews', reviewsRouter);
 
 /* ============================================================
  * СЛУЖЕБНЫЕ ЭНДПОИНТЫ
  * ============================================================ */
-
-// Проверка работоспособности сервера
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 /* ============================================================
- * ОБРАБОТКА 404 (задача Алексеева + Золотухина)
+ * 404
  * ============================================================ */
-
-// Для API — JSON-ошибка
 app.use('/api', (req, res) => {
   res.status(404).json({
     error: true,
@@ -73,7 +62,6 @@ app.use('/api', (req, res) => {
   });
 });
 
-// Для страниц — кастомная 404.html (если существует)
 app.use((req, res) => {
   const notFoundPage = path.join(CLIENT_DIR, '404.html');
   if (fs.existsSync(notFoundPage)) {
@@ -83,7 +71,7 @@ app.use((req, res) => {
 });
 
 /* ============================================================
- * ОБРАБОТКА 500 (задача Золотухина)
+ * 500
  * ============================================================ */
 app.use((err, req, res, next) => {
   console.error('Ошибка сервера:', err);
